@@ -26,8 +26,8 @@ def run_fetcher():
             logger.error("No se obtuvieron datos de la API")
             return False
         
-        # Guardar datos raw
-        filename = save_raw(data, "leagues")
+        # Guardar datos raw (con info de país/temporada para MongoDB)
+        filename = save_raw(data, "leagues", country=DEFAULT_COUNTRY, season=DEFAULT_SEASON)
         
         if filename:
             logger.info("=" * 60)
