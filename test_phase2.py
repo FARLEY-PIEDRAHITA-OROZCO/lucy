@@ -42,7 +42,7 @@ def test_repository_creation():
         from src.database.repositories import LeagueRepository
         
         repo = LeagueRepository()
-        is_available = repo.is_available()
+        is_available = repo.db is not None
         
         print(f"✓ Repositorio creado")
         print(f"  MongoDB disponible: {is_available}")
