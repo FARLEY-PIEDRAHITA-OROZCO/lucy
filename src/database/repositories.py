@@ -17,7 +17,10 @@ class LeagueRepository:
     
     def is_available(self) -> bool:
         """Verifica si MongoDB está disponible"""
-        return self.db is not None
+        try:
+            return self.db is not None and self.clean_collection is not None
+        except:
+            return False
     
     # === RAW DATA OPERATIONS ===
     
