@@ -12,8 +12,8 @@ class LeagueRepository:
     
     def __init__(self):
         self.db = get_db()
-        self.raw_collection = self.db.raw_leagues if self.db else None
-        self.clean_collection = self.db.clean_leagues if self.db else None
+        self.raw_collection = self.db.raw_leagues if self.db is not None else None
+        self.clean_collection = self.db.clean_leagues if self.db is not None else None
     
     def is_available(self) -> bool:
         """Verifica si MongoDB está disponible"""
