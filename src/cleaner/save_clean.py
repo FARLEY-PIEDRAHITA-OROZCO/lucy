@@ -1,6 +1,11 @@
 import os
+import sys
 from datetime import datetime
 from .logger import get_logger
+
+# Importar repositorio MongoDB
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+from src.database.repositories import LeagueRepository
 
 logger = get_logger()
 
@@ -8,7 +13,7 @@ CLEAN_DIR = "data/clean"
 
 def save_clean(df, name="clean_leagues"):
     """
-    Guarda DataFrame limpio en formato CSV.
+    Guarda DataFrame limpio en formato CSV y MongoDB.
     
     Args:
         df: DataFrame a guardar
@@ -34,6 +39,17 @@ def save_clean(df, name="clean_leagues"):
         logger.info(f"  Registros: {len(df)}")
         logger.info(f"  Columnas: {len(df.columns)}")
         logger.info(f"  Tamaño: {file_size / 1024:.2f} KB")
+        
+        # Guardar en MongoDB (si está disponible)
+        try:
+            repo = LeagueRepository()
+            if repo.is_available():
+                logger.info("\nGuardando en MongoDB...")
+                inserted = repo.save_clean_batch(df, batch_size=1000)
+                if inserted > 0:
+                    logger.info(f"✓ MongoDB: {inserted} documentos guardados")
+        except Exception as mongo_error:
+            logger.warning(f"MongoDB no disponible: {str(mongo_error)}")
         
         return filename
         
