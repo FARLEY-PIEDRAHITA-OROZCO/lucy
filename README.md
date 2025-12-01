@@ -145,9 +145,54 @@ Los logs se guardan en el directorio `logs/` con el formato:
 
 ## 📈 Próximas Fases
 
-- [ ] **Fase 2**: Integración con MongoDB para escalabilidad
+- [✅] **Fase 1**: Seguridad, logging y manejo de errores (COMPLETADA)
+- [✅] **Fase 2**: Integración con MongoDB para escalabilidad (COMPLETADA)
 - [ ] **Fase 3**: API REST con FastAPI
 - [ ] **Fase 4**: Módulo de pronósticos con ML
+
+## 🆕 Fase 2: MongoDB Integration
+
+### Características
+- ✅ Almacenamiento dual: Archivos + MongoDB
+- ✅ Procesamiento por lotes (1000 registros/lote)
+- ✅ Índices optimizados para queries rápidas
+- ✅ Paginación completa
+- ✅ Filtros por país y temporada
+- ✅ Graceful degradation (funciona sin MongoDB)
+
+### Uso con MongoDB
+
+```bash
+# Iniciar MongoDB (Docker)
+docker run -d -p 27017:27017 --name lucy-mongo mongo:latest
+
+# Ejecutar pipeline (guarda en archivos + MongoDB)
+python pipeline.py
+
+# Ver demo de funcionalidades
+python demo_mongodb.py
+
+# Tests de Fase 2
+python test_phase2.py
+```
+
+### Consultas Rápidas
+
+```python
+from src.database.repositories import LeagueRepository
+
+repo = LeagueRepository()
+
+# Estadísticas
+stats = repo.get_stats()
+
+# Paginación
+leagues = repo.get_all_leagues(page=1, limit=50)
+
+# Filtros
+england = repo.get_by_country('England')
+season_23 = repo.get_by_season(2023)
+```
 
 ## 📄 Licencia
 
