@@ -61,3 +61,56 @@ class ErrorResponse(BaseModel):
     """Schema para errores"""
     error: str
     detail: Optional[str] = None
+
+class FixtureResponse(BaseModel):
+    """Schema para respuesta de fixture individual"""
+    id_partido: int
+    equipo_local: str
+    equipo_visitante: str
+    id_equipo_local: int
+    id_equipo_visitante: int
+    estado_del_partido: str
+    fecha: Optional[str]
+    hora: Optional[str]
+    goles_local_1MT: str
+    goles_local_TR: str
+    goles_visitante_1MT: str
+    goles_visitante_TR: str
+    liga_id: int
+    liga_nombre: str
+    ronda: str
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "id_partido": 986991,
+                "equipo_local": "Canuelas",
+                "equipo_visitante": "Ituzaingó",
+                "id_equipo_local": 1947,
+                "id_equipo_visitante": 8386,
+                "estado_del_partido": "Partido Finalizado",
+                "fecha": "2023-02-11",
+                "hora": "15:00:00.000000",
+                "goles_local_1MT": "1",
+                "goles_local_TR": "1",
+                "goles_visitante_1MT": "0",
+                "goles_visitante_TR": "0",
+                "liga_id": 131,
+                "liga_nombre": "Primera B Metropolitana",
+                "ronda": "Apertura - 1"
+            }
+        }
+
+class PaginatedFixturesResponse(BaseModel):
+    """Schema para fixtures paginados"""
+    total: int
+    page: int
+    limit: int
+    data: List[FixtureResponse]
+
+class FixturesStatsResponse(BaseModel):
+    """Schema para estadísticas de fixtures"""
+    total_fixtures: int
+    total_ligas: int
+    estados: List[str]
+    ligas: List[int]
