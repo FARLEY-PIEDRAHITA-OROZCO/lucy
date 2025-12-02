@@ -3,9 +3,9 @@ import sys
 from datetime import datetime
 from .logger import get_logger
 
-# Importar repositorio MongoDB
+# Importar repositorios MongoDB
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from src.database.repositories import LeagueRepository
+from src.database.repositories import LeagueRepository, FixturesRepository
 
 logger = get_logger()
 
