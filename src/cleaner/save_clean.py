@@ -42,12 +42,23 @@ def save_clean(df, name="clean_leagues"):
         
         # Guardar en MongoDB (si está disponible)
         try:
-            repo = LeagueRepository()
-            if repo.is_available():
-                logger.info("\nGuardando en MongoDB...")
-                inserted = repo.save_clean_batch(df, batch_size=1000)
-                if inserted > 0:
-                    logger.info(f"✓ MongoDB: {inserted} documentos guardados")
+            # Detectar si son fixtures o ligas basado en columnas
+            is_fixtures = 'id_partido' in df.columns
+            
+            if is_fixtures:
+                repo = FixturesRepository()
+                if repo.is_available():
+                    logger.info("\nGuardando fixtures en MongoDB...")
+                    inserted = repo.save_fixtures_batch(df, batch_size=1000)
+                    if inserted > 0:
+                        logger.info(f"✓ MongoDB: {inserted} fixtures guardados")
+            else:
+                repo = LeagueRepository()
+                if repo.is_available():
+                    logger.info("\nGuardando ligas en MongoDB...")
+                    inserted = repo.save_clean_batch(df, batch_size=1000)
+                    if inserted > 0:
+                        logger.info(f"✓ MongoDB: {inserted} documentos guardados")
         except Exception as mongo_error:
             logger.warning(f"MongoDB no disponible: {str(mongo_error)}")
         
