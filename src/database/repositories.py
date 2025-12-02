@@ -202,3 +202,151 @@ class LeagueRepository:
         except Exception as e:
             logger.error(f"Error obteniendo stats: {str(e)}")
             return {}
+
+class FixturesRepository:
+    """Repositorio para operaciones con fixtures/partidos"""
+    
+    def __init__(self):
+        self.db = get_db()
+        self.collection = self.db.fixtures if self.db is not None else None
+    
+    def is_available(self) -> bool:
+        """Verifica si MongoDB está disponible"""
+        try:
+            return self.db is not None and self.collection is not None
+        except:
+            return False
+    
+    def save_fixtures_batch(self, df, batch_size: int = 1000) -> int:
+        """
+        Guarda fixtures en MongoDB por lotes
+        
+        Args:
+            df: DataFrame de pandas con fixtures
+            batch_size: Tamaño de lote
+            
+        Returns:
+            int: Número de documentos insertados
+        """
+        if not self.is_available():
+            return 0
+        
+        try:
+            documents = FixturesModel.bulk_from_dataframe(df)
+            total_inserted = 0
+            
+            # Insertar por lotes
+            for i in range(0, len(documents), batch_size):
+                batch = documents[i:i + batch_size]
+                
+                # Usar update_many con upsert para evitar duplicados
+                for doc in batch:
+                    self.collection.update_one(
+                        {'id_partido': doc['id_partido']},
+                        {'$set': doc},
+                        upsert=True
+                    )
+                    total_inserted += 1
+                
+                logger.info(f"  Lote {i//batch_size + 1}: {len(batch)} fixtures procesados")
+            
+            logger.info(f"✓ Total guardado en MongoDB: {total_inserted} fixtures")
+            return total_inserted
+            
+        except Exception as e:
+            logger.error(f"Error guardando fixtures en MongoDB: {str(e)}")
+            return 0
+    
+    def get_fixtures_by_league(self, league_id: int, page: int = 1, limit: int = 50) -> List[Dict]:
+        """Obtiene fixtures de una liga específica"""
+        if not self.is_available():
+            return []
+        
+        try:
+            skip = (page - 1) * limit
+            cursor = self.collection.find(
+                {'liga_id': league_id}
+            ).sort('fecha', -1).skip(skip).limit(limit)
+            
+            fixtures = list(cursor)
+            for fixture in fixtures:
+                fixture['_id'] = str(fixture['_id'])
+            
+            return fixtures
+        except Exception as e:
+            logger.error(f"Error obteniendo fixtures: {str(e)}")
+            return []
+    
+    def get_fixtures_by_date_range(self, start_date: str, end_date: str, page: int = 1, limit: int = 50) -> List[Dict]:
+        """Obtiene fixtures en un rango de fechas"""
+        if not self.is_available():
+            return []
+        
+        try:
+            skip = (page - 1) * limit
+            cursor = self.collection.find({
+                'fecha': {'$gte': start_date, '$lte': end_date}
+            }).sort('fecha', -1).skip(skip).limit(limit)
+            
+            fixtures = list(cursor)
+            for fixture in fixtures:
+                fixture['_id'] = str(fixture['_id'])
+            
+            return fixtures
+        except Exception as e:
+            logger.error(f"Error obteniendo fixtures por fecha: {str(e)}")
+            return []
+    
+    def get_fixtures_by_team(self, team_id: int, page: int = 1, limit: int = 50) -> List[Dict]:
+        """Obtiene fixtures de un equipo específico"""
+        if not self.is_available():
+            return []
+        
+        try:
+            skip = (page - 1) * limit
+            cursor = self.collection.find({
+                '$or': [
+                    {'id_equipo_local': team_id},
+                    {'id_equipo_visitante': team_id}
+                ]
+            }).sort('fecha', -1).skip(skip).limit(limit)
+            
+            fixtures = list(cursor)
+            for fixture in fixtures:
+                fixture['_id'] = str(fixture['_id'])
+            
+            return fixtures
+        except Exception as e:
+            logger.error(f"Error obteniendo fixtures por equipo: {str(e)}")
+            return []
+    
+    def count_fixtures(self) -> int:
+        """Cuenta total de fixtures"""
+        if not self.is_available():
+            return 0
+        
+        try:
+            return self.collection.count_documents({})
+        except Exception as e:
+            logger.error(f"Error contando fixtures: {str(e)}")
+            return 0
+    
+    def get_fixtures_stats(self) -> Dict:
+        """Obtiene estadísticas de fixtures"""
+        if not self.is_available():
+            return {}
+        
+        try:
+            total = self.collection.count_documents({})
+            ligas = self.collection.distinct('liga_id')
+            estados = self.collection.distinct('estado_del_partido')
+            
+            return {
+                'total_fixtures': total,
+                'total_ligas': len(ligas),
+                'estados': estados,
+                'ligas': ligas
+            }
+        except Exception as e:
+            logger.error(f"Error obteniendo stats: {str(e)}")
+            return {}
