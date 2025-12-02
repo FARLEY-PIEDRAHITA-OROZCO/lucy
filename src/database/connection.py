@@ -68,6 +68,14 @@ def _create_indexes(db):
         db.clean_leagues.create_index('country')
         db.clean_leagues.create_index([('country', 1), ('season', 1)])
         
+        # Índices para fixtures
+        db.fixtures.create_index('id_partido', unique=True)
+        db.fixtures.create_index('liga_id')
+        db.fixtures.create_index('fecha')
+        db.fixtures.create_index('id_equipo_local')
+        db.fixtures.create_index('id_equipo_visitante')
+        db.fixtures.create_index([('liga_id', 1), ('fecha', -1)])
+        
         logger.info("✓ Índices creados en MongoDB")
     except Exception as e:
         logger.warning(f"No se pudieron crear índices: {str(e)}")
