@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 
 # Importar routers
-from .routes import health, leagues, pipeline_routes
+from .routes import health, leagues, pipeline_routes, fixtures
 
 # Crear app
 app = FastAPI(
