@@ -143,12 +143,39 @@ Los logs se guardan en el directorio `logs/` con el formato:
 - Ejecuta primero `main_fetcher.py` para generar datos raw
 - Verifica que exista el directorio `data/raw/`
 
-## 📈 Próximas Fases
+## 📈 Fases del Proyecto
 
 - [✅] **Fase 1**: Seguridad, logging y manejo de errores (COMPLETADA)
 - [✅] **Fase 2**: Integración con MongoDB para escalabilidad (COMPLETADA)
-- [ ] **Fase 3**: API REST con FastAPI
+- [✅] **Fase 3**: API REST con FastAPI (COMPLETADA)
 - [ ] **Fase 4**: Módulo de pronósticos con ML
+
+## 🆕 Fase 3: API REST
+
+### Iniciar API
+```bash
+python start_api.py
+```
+
+### Endpoints Principales
+- `GET /api/health` - Estado del sistema
+- `GET /api/leagues?page=1&limit=50` - Ligas paginadas
+- `GET /api/leagues/country/{country}` - Filtrar por país
+- `GET /api/stats` - Estadísticas
+- `POST /api/pipeline/run` - Ejecutar pipeline
+- **Docs:** http://localhost:8001/docs
+
+### Uso Rápido
+```bash
+# Health check
+curl http://localhost:8001/api/health
+
+# Ver ligas
+curl "http://localhost:8001/api/leagues?limit=5"
+
+# Estadísticas
+curl http://localhost:8001/api/stats
+```
 
 ## 🆕 Fase 2: MongoDB Integration
 
