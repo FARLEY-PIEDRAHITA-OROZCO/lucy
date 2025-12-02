@@ -27,6 +27,7 @@ app.add_middleware(
 # Incluir routers
 app.include_router(health.router, prefix="/api", tags=["Health"])
 app.include_router(leagues.router, prefix="/api", tags=["Leagues"])
+app.include_router(fixtures.router, prefix="/api", tags=["Fixtures"])
 app.include_router(pipeline_routes.router, prefix="/api", tags=["Pipeline"])
 
 # Root endpoint
