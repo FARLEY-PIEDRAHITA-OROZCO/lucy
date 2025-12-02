@@ -3,7 +3,7 @@ import logging
 from typing import List, Dict, Optional
 from datetime import datetime
 from .connection import get_db
-from .models import RawLeagueModel, CleanLeagueModel
+from .models import RawLeagueModel, CleanLeagueModel, FixturesModel
 
 logger = logging.getLogger(__name__)
 
